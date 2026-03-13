@@ -3,25 +3,25 @@
     "description": "SAML2 Service Provider integration for Laravel applications, based on OneLogin toolkit",
     "type": "library",
     "keywords": ["laravel", "saml", "saml2", "onelogin", "sso"],
-    "homepage": "https://github.com/24slides/laravel-saml2",
+    "homepage": "https://github.com/NiklasSchmitt/laravel-saml2",
     "license": "MIT",
     "authors": [
         {
-            "name": "Artem Brezhnev",
-            "email": "brezzhnev@gmail.com"
-        },
-        {
             "name": "Niklas Schmitt",
             "email": "niklas.schmitt@hs-fulda.de"
+        },
+        {
+            "name": "Artem Brezhnev",
+            "email": "brezzhnev@gmail.com"
         }
     ],
     "require": {
-        "php": ">=8.2",
+        "php": "^8.4",
         "ext-openssl": "*",
-        "illuminate/console": "^9.0 || ^10.0 || ^11.0 || ^12.0",
-        "illuminate/database": "^9.0 || ^10.0 || ^11.0 || ^12.0",
-        "illuminate/support": "^9.0 || ^10.0 || ^11.0 || ^12.0",
-        "onelogin/php-saml": "^4.0"
+        "illuminate/console": "^11.0 || ^12.0",
+        "illuminate/database": "^11.0 || ^12.0",
+        "illuminate/support": "^11.0 || ^12.0",
+        "onelogin/php-saml": "^4.3.1"
     },
     "require-dev": {
         "mockery/mockery": "^1.6.12",
@@ -44,14 +44,11 @@
             "providers": [
                 "Slides\\Saml2\\ServiceProvider"
             ]
-        },
-        "branch-aliases": {
-            "dev-master": "2.0.8-dev"
         }
     },
     "replace": {
         "24slides/laravel-saml2": "*"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
