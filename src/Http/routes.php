@@ -26,7 +26,7 @@ Route::group([
         'uses' => 'Slides\Saml2\Http\Controllers\Saml2Controller@acs',
     ));
 
-    Route::get('/{uuid}/sls', array(
+    Route::match(['GET', 'POST'], '/{uuid}/sls', array(
         'as' => 'saml.sls',
         'uses' => 'Slides\Saml2\Http\Controllers\Saml2Controller@sls',
     ));

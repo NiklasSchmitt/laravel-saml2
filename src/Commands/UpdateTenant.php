@@ -65,16 +65,25 @@ class UpdateTenant extends \Illuminate\Console\Command
             return;
         }
 
-        $tenant->update(array_filter([
+        $updates = array_filter([
             'key' => $this->option('key'),
             'idp_entity_id' => $this->option('entityId'),
             'idp_login_url' => $this->option('loginUrl'),
             'idp_logout_url' => $this->option('logoutUrl'),
             'idp_x509_cert' => $this->option('x509cert'),
             'relay_state_url' => $this->option('relayStateUrl'),
-            'name_id_format' => $this->resolveNameIdFormat(),
             'metadata' => ConsoleHelper::stringToArray($this->option('metadata'))
-        ]));
+        ]);
+
+        if ($this->option('nameIdFormat') !== null) {
+            if (!$nameIdFormat = $this->resolveNameIdFormat()) {
+                return;
+            }
+
+            $updates['name_id_format'] = $nameIdFormat;
+        }
+
+        $tenant->update($updates);
 
         if(!$tenant->save()) {
             $this->error('Tenant cannot be saved.');

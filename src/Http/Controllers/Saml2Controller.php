@@ -57,7 +57,10 @@ class Saml2Controller extends Controller
             logger()->error('saml2.error', $errors);
             session()->flash('saml2.error', $errors);
 
-            return redirect(config('saml2.errorRoute'));
+            return $this->redirectToConfiguredUrl(
+                config('saml2.errorRoute'),
+                config('saml2.loginRoute')
+            );
         }
 
         $user = $auth->getSaml2User();
@@ -67,10 +70,12 @@ class Saml2Controller extends Controller
         $redirectUrl = $user->getIntendedUrl();
 
         if ($redirectUrl) {
-            return redirect($redirectUrl);
+            return $this->redirectToConfiguredUrl($redirectUrl);
         }
 
-        return redirect($auth->getTenant()->relay_state_url ?: config('saml2.loginRoute'));
+        return $this->redirectToConfiguredUrl(
+            $auth->getTenant()->relay_state_url ?: config('saml2.loginRoute')
+        );
     }
 
     /**
@@ -101,10 +106,26 @@ class Saml2Controller extends Controller
             logger()->error('saml2.error', $errors);
             session()->flash('saml2.error', $errors);
 
-            return redirect(config('saml2.errorRoute'));
+            return $this->redirectToConfiguredUrl(
+                config('saml2.errorRoute'),
+                config('saml2.logoutRoute')
+            );
         }
 
-        return redirect(config('saml2.logoutRoute')); //may be set a configurable default
+        return $this->redirectToConfiguredUrl(config('saml2.logoutRoute')); //may be set a configurable default
+    }
+
+    /**
+     * Build a redirect response that never returns Redirector instance.
+     *
+     * @param string|null $url
+     * @param string|null $fallback
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function redirectToConfiguredUrl($url = null, $fallback = null)
+    {
+        return redirect()->to($url ?: $fallback ?: '/');
     }
 
     /**
