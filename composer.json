@@ -49,6 +49,9 @@
             "dev-master": "2.0.8-dev"
         }
     },
+    "replace": {
+        "24slides/laravel-saml2": "*"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
