@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Slides\Saml2;
 
 use OneLogin\Saml2\Auth as OneLoginAuth;
@@ -7,65 +9,26 @@ use OneLogin\Saml2\Error as OneLoginError;
 use Slides\Saml2\Events\SignedOut;
 use Slides\Saml2\Models\Tenant;
 
-/**
- * Class Auth
- *
- * @package Slides\Saml2
- */
 class Auth
 {
-    /**
-     * The base authentication handler.
-     *
-     * @var OneLoginAuth
-     */
-    protected $base;
-
-    /**
-     * The resolved tenant.
-     *
-     * @var Tenant
-     */
-    protected $tenant;
-
-    /**
-     * Auth constructor.
-     *
-     * @param OneLoginAuth $auth
-     * @param Tenant $tenant
-     */
-    public function __construct(OneLoginAuth $auth, Tenant $tenant)
+    public function __construct(
+        protected OneLoginAuth $base,
+        protected Tenant $tenant
+    )
     {
-        $this->base = $auth;
-        $this->tenant = $tenant;
     }
 
-    /**
-     * Checks whether a user is authenticated.
-     *
-     * @return bool
-     */
-    public function isAuthenticated()
+    public function isAuthenticated(): bool
     {
         return $this->base->isAuthenticated();
     }
 
-    /**
-     * Create a SAML2 user.
-     *
-     * @return Saml2User
-     */
-    public function getSaml2User()
+    public function getSaml2User(): Saml2User
     {
         return new Saml2User($this->base, $this->tenant);
     }
 
-    /**
-     * The ID of the last message processed.
-     *
-     * @return String
-     */
-    public function getLastMessageId()
+    public function getLastMessageId(): ?string
     {
         return $this->base->getLastMessageId();
     }
@@ -88,13 +51,13 @@ class Auth
      * @throws OneLoginError
      */
     public function login(
-        $returnTo = null,
-        $parameters = array(),
-        $forceAuthn = false,
-        $isPassive = false,
-        $stay = false,
-        $setNameIdPolicy = true
-    )
+        ?string $returnTo = null,
+        array $parameters = [],
+        bool $forceAuthn = false,
+        bool $isPassive = false,
+        bool $stay = false,
+        bool $setNameIdPolicy = true
+    ): ?string
     {
         return $this->base->login($returnTo, $parameters, $forceAuthn, $isPassive, $stay, $setNameIdPolicy);
     }
@@ -115,17 +78,15 @@ class Auth
      * @throws OneLoginError
      */
     public function logout(
-        $returnTo = null,
-        $nameId = null,
-        $sessionIndex = null,
-        $nameIdFormat = null,
-        $stay = false,
-        $nameIdNameQualifier = null
-    )
+        ?string $returnTo = null,
+        ?string $nameId = null,
+        ?string $sessionIndex = null,
+        ?string $nameIdFormat = null,
+        bool $stay = false,
+        ?string $nameIdNameQualifier = null
+    ): ?string
     {
-        $auth = $this->base;
-
-        return $auth->logout($returnTo, [], $nameId, $sessionIndex, $stay, $nameIdFormat, $nameIdNameQualifier);
+        return $this->base->logout($returnTo, [], $nameId, $sessionIndex, $stay, $nameIdFormat, $nameIdNameQualifier);
     }
 
     /**
@@ -136,7 +97,7 @@ class Auth
      * @throws OneLoginError
      * @throws \OneLogin\Saml2\ValidationError
      */
-    public function acs()
+    public function acs(): ?array
     {
         $this->base->processResponse();
 
@@ -164,7 +125,7 @@ class Auth
      *
      * @throws \OneLogin\Saml2\Error
      */
-    public function sls($retrieveParametersFromServer = false)
+    public function sls(bool $retrieveParametersFromServer = false): array
     {
         $this->base->processSLO(false, null, $retrieveParametersFromServer, function () {
             event(new SignedOut());
@@ -184,7 +145,7 @@ class Auth
      * @throws \Exception
      * @throws \InvalidArgumentException If metadata is not correctly set
      */
-    public function getMetadata()
+    public function getMetadata(): string
     {
         $settings = $this->base->getSettings();
         $metadata = $settings->getSPMetadata();
@@ -207,39 +168,22 @@ class Auth
      *
      * @return string
      */
-    public function getLastErrorReason()
+    public function getLastErrorReason(): string
     {
         return $this->base->getLastErrorReason();
     }
 
-    /**
-     * Get the base authentication handler.
-     *
-     * @return OneLoginAuth
-     */
-    public function getBase()
+    public function getBase(): OneLoginAuth
     {
         return $this->base;
     }
 
-    /**
-     * Set a tenant
-     *
-     * @param Tenant $tenant
-     *
-     * @return void
-     */
-    public function setTenant(Tenant $tenant)
+    public function setTenant(Tenant $tenant): void
     {
         $this->tenant = $tenant;
     }
 
-    /**
-     * Get a resolved tenant.
-     *
-     * @return Tenant|null
-     */
-    public function getTenant()
+    public function getTenant(): Tenant
     {
         return $this->tenant;
     }

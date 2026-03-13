@@ -1,33 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Slides\Saml2\Http\Controllers\Saml2Controller;
 
 Route::group([
     'prefix' => config('saml2.routesPrefix'),
-    'middleware' => array_merge(['saml2.resolveTenant'], config('saml2.routesMiddleware')),
+    'middleware' => array_merge(['saml2.resolveTenant'], (array) config('saml2.routesMiddleware', [])),
 ], function () {
-    Route::get('/{uuid}/logout', array(
-        'as' => 'saml.logout',
-        'uses' => 'Slides\Saml2\Http\Controllers\Saml2Controller@logout',
-    ));
-
-    Route::get('/{uuid}/login', array(
-        'as' => 'saml.login',
-        'uses' => 'Slides\Saml2\Http\Controllers\Saml2Controller@login',
-    ));
-
-    Route::get('/{uuid}/metadata', array(
-        'as' => 'saml.metadata',
-        'uses' => 'Slides\Saml2\Http\Controllers\Saml2Controller@metadata',
-    ));
-
-    Route::post('/{uuid}/acs', array(
-        'as' => 'saml.acs',
-        'uses' => 'Slides\Saml2\Http\Controllers\Saml2Controller@acs',
-    ));
-
-    Route::match(['GET', 'POST'], '/{uuid}/sls', array(
-        'as' => 'saml.sls',
-        'uses' => 'Slides\Saml2\Http\Controllers\Saml2Controller@sls',
-    ));
+    Route::get('/{uuid}/logout', [Saml2Controller::class, 'logout'])->name('saml.logout');
+    Route::get('/{uuid}/login', [Saml2Controller::class, 'login'])->name('saml.login');
+    Route::get('/{uuid}/metadata', [Saml2Controller::class, 'metadata'])->name('saml.metadata');
+    Route::post('/{uuid}/acs', [Saml2Controller::class, 'acs'])->name('saml.acs');
+    Route::match(['GET', 'POST'], '/{uuid}/sls', [Saml2Controller::class, 'sls'])->name('saml.sls');
 });

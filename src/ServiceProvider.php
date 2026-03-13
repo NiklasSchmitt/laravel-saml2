@@ -1,27 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Slides\Saml2;
 
-/**
- * Class ServiceProvider
- *
- * @package Slides\Saml2
- */
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
+    public function register(): void
+    {
+        $this->mergeConfigFrom(__DIR__ . '/../config/saml2.php', 'saml2');
+    }
 
-    /**
-     * Bootstrap the application events.
-     *
-     * @return void
-     */
-    public function boot()
+    public function boot(): void
     {
         $this->bootMiddleware();
         $this->bootRoutes();
@@ -30,38 +20,26 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->loadMigrations();
     }
 
-    /**
-     * Bootstrap the routes.
-     *
-     * @return void
-     */
-    protected function bootRoutes()
+    protected function bootRoutes(): void
     {
-        if($this->app['config']['saml2.useRoutes'] == true) {
-            include __DIR__ . '/Http/routes.php';
+        if ((bool) $this->app['config']->get('saml2.useRoutes', true)) {
+            $this->loadRoutesFrom(__DIR__ . '/Http/routes.php');
         }
     }
 
-    /**
-     * Bootstrap the publishable files.
-     *
-     * @return void
-     */
-    protected function bootPublishes()
+    protected function bootPublishes(): void
     {
         $source = __DIR__ . '/../config/saml2.php';
 
         $this->publishes([$source => config_path('saml2.php')]);
-        $this->mergeConfigFrom($source, 'saml2');
     }
 
-    /**
-     * Bootstrap the console commands.
-     *
-     * @return void
-     */
-    protected function bootCommands()
+    protected function bootCommands(): void
     {
+        if (! $this->app->runningInConsole()) {
+            return;
+        }
+
         $this->commands([
             \Slides\Saml2\Commands\CreateTenant::class,
             \Slides\Saml2\Commands\UpdateTenant::class,
@@ -72,35 +50,15 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         ]);
     }
 
-    /**
-     * Bootstrap the console commands.
-     *
-     * @return void
-     */
-    protected function bootMiddleware()
+    protected function bootMiddleware(): void
     {
         $this->app['router']->aliasMiddleware('saml2.resolveTenant', \Slides\Saml2\Http\Middleware\ResolveTenant::class);
     }
 
-    /**
-     * Load the package migrations.
-     *
-     * @return void
-     */
-    protected function loadMigrations()
+    protected function loadMigrations(): void
     {
         if (config('saml2.load_migrations', true)) {
             $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         }
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [];
     }
 }

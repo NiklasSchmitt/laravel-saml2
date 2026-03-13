@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Slides\Saml2\Http\Controllers;
 
-use Slides\Saml2\Events\SignedIn;
-use Slides\Saml2\Auth;
-use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Controller;
 use OneLogin\Saml2\Error as OneLoginError;
+use Slides\Saml2\Auth;
+use Slides\Saml2\Events\SignedIn;
 
 /**
  * Class Saml2Controller
@@ -43,7 +46,7 @@ class Saml2Controller extends Controller
      * @throws OneLoginError
      * @throws \OneLogin\Saml2\ValidationError
      */
-    public function acs(Auth $auth)
+    public function acs(Auth $auth): RedirectResponse
     {
         $errors = $auth->acs();
 
@@ -92,7 +95,7 @@ class Saml2Controller extends Controller
      * @throws OneLoginError
      * @throws \Exception
      */
-    public function sls(Auth $auth)
+    public function sls(Auth $auth): RedirectResponse
     {
         $errors = $auth->sls(config('saml2.retrieveParametersFromServer'));
 
@@ -123,7 +126,7 @@ class Saml2Controller extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function redirectToConfiguredUrl($url = null, $fallback = null)
+    protected function redirectToConfiguredUrl(?string $url = null, ?string $fallback = null): RedirectResponse
     {
         return redirect()->to($url ?: $fallback ?: '/');
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Slides\Saml2\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -58,6 +60,6 @@ class Tenant extends Model
      * @var array
      */
     protected $casts = [
-        'metadata' => 'array'
+        'metadata' => 'array',
     ];
 }

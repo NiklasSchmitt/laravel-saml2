@@ -1,54 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Slides\Saml2\Http\Middleware;
 
-use Slides\Saml2\Repositories\TenantRepository;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Slides\Saml2\Models\Tenant;
 use Slides\Saml2\OneLoginBuilder;
+use Slides\Saml2\Repositories\TenantRepository;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-/**
- * Class ResolveTenant
- *
- * @package Slides\Saml2\Http\Middleware
- */
 class ResolveTenant
 {
-    /**
-     * @var TenantRepository
-     */
-    protected $tenants;
-
-    /**
-     * @var OneLoginBuilder
-     */
-    protected $builder;
-
-    /**
-     * ResolveTenant constructor.
-     *
-     * @param TenantRepository $tenants
-     * @param OneLoginBuilder $builder
-     */
-    public function __construct(TenantRepository $tenants, OneLoginBuilder $builder)
+    public function __construct(
+        protected TenantRepository $tenants,
+        protected OneLoginBuilder $builder
+    )
     {
-        $this->tenants = $tenants;
-        $this->builder = $builder;
     }
 
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     *
-     * @throws NotFoundHttpException
-     *
-     * @return mixed
-     */
-    public function handle($request, \Closure $next)
+    public function handle($request, \Closure $next): mixed
     {
-        if(!$tenant = $this->resolveTenant($request)) {
+        $tenant = $this->resolveTenant($request);
+
+        if (! $tenant) {
             throw new NotFoundHttpException();
         }
 
@@ -61,49 +36,43 @@ class ResolveTenant
         }
 
         session()->flash('saml2.tenant.uuid', $tenant->uuid);
-
-        $this->builder
-            ->withTenant($tenant)
-            ->bootstrap();
+        $this->builder->bootstrap($tenant);
 
         return $next($request);
     }
 
-    /**
-     * Resolve a tenant by a request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     *
-     * @return \Slides\Saml2\Models\Tenant|null
-     */
-    protected function resolveTenant($request)
+    protected function resolveTenant($request): ?Tenant
     {
-        if(!$uuid = $request->route('uuid')) {
+        $uuid = $request->route('uuid');
+
+        if (! $uuid) {
             if (config('saml2.debug')) {
                 Log::debug('[Saml2] Tenant UUID is not present in the URL so cannot be resolved', [
-                    'url' => $request->fullUrl()
+                    'url' => $request->fullUrl(),
                 ]);
             }
 
             return null;
         }
 
-        if(!$tenant = $this->tenants->findByUUID($uuid)) {
+        $tenant = $this->tenants->findByUUID((string) $uuid);
+
+        if (! $tenant) {
             if (config('saml2.debug')) {
                 Log::debug('[Saml2] Tenant doesn\'t exist', [
-                    'uuid' => $uuid
+                    'uuid' => $uuid,
                 ]);
             }
 
             return null;
         }
 
-        if($tenant->trashed()) {
+        if ($tenant->trashed()) {
             if (config('saml2.debug')) {
-                Log::debug('[Saml2] Tenant #' . $tenant->id. ' resolved but marked as deleted', [
+                Log::debug('[Saml2] Tenant #' . $tenant->id . ' resolved but marked as deleted', [
                     'id' => $tenant->id,
                     'uuid' => $uuid,
-                    'deleted_at' => $tenant->deleted_at->toDateTimeString()
+                    'deleted_at' => $tenant->deleted_at?->toDateTimeString(),
                 ]);
             }
 
