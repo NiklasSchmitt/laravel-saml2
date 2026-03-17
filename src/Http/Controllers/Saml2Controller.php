@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Slides\Saml2\Http\Controllers;
+namespace NiklasSchmitt\Saml2\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use OneLogin\Saml2\Error as OneLoginError;
-use Slides\Saml2\Auth;
-use Slides\Saml2\Events\SignedIn;
+use NiklasSchmitt\Saml2\Auth;
+use NiklasSchmitt\Saml2\Events\SignedIn;
 
 /**
  * Class Saml2Controller
  *
- * @package Slides\Saml2\Http\Controllers
+ * @package NiklasSchmitt\Saml2\Http\Controllers
  */
 class Saml2Controller extends Controller
 {

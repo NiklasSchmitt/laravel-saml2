@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -11,9 +13,9 @@ class CreateSaml2TenantsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('saml2_tenants', function (Blueprint $table) {
+        Schema::create('saml2_tenants', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('uuid');
             $table->string('key')->nullable();
@@ -22,6 +24,8 @@ class CreateSaml2TenantsTable extends Migration
             $table->string('idp_logout_url');
             $table->text('idp_x509_cert');
             $table->json('metadata');
+            $table->string('name_id_format')->default('persistent');
+            $table->string('relay_state_url')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -32,7 +36,7 @@ class CreateSaml2TenantsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('saml2_tenants');
     }

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Slides\Saml2;
+namespace NiklasSchmitt\Saml2;
 
 use OneLogin\Saml2\Auth as OneLoginAuth;
 use OneLogin\Saml2\Error as OneLoginError;
-use Slides\Saml2\Events\SignedOut;
-use Slides\Saml2\Models\Tenant;
+use NiklasSchmitt\Saml2\Events\SignedOut;
+use NiklasSchmitt\Saml2\Models\Tenant;
 
 class Auth
 {

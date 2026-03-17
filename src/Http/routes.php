@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Slides\Saml2\Http\Controllers\Saml2Controller;
+use NiklasSchmitt\Saml2\Http\Controllers\Saml2Controller;
 
 Route::group([
     'prefix' => config('saml2.routesPrefix'),

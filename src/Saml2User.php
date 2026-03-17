@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Slides\Saml2;
+namespace NiklasSchmitt\Saml2;
 
 use OneLogin\Saml2\Auth as OneLoginAuth;
-use Slides\Saml2\Models\Tenant;
+use NiklasSchmitt\Saml2\Models\Tenant;
 
 class Saml2User
 {

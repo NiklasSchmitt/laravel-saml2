@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Slides\Saml2\Models;
+namespace NiklasSchmitt\Saml2\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $deleted_at
  *
- * @package Slides\Saml2\Models
+ * @package NiklasSchmitt\Saml2\Models
  */
 class Tenant extends Model
 {

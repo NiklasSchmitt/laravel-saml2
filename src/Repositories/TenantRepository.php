@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Slides\Saml2\Repositories;
+namespace NiklasSchmitt\Saml2\Repositories;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Slides\Saml2\Models\Tenant;
+use NiklasSchmitt\Saml2\Models\Tenant;
 
 class TenantRepository
 {

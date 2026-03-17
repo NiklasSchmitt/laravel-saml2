@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Slides\Saml2;
+namespace NiklasSchmitt\Saml2;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\URL;
 use OneLogin\Saml2\Auth as OneLoginAuth;
 use OneLogin\Saml2\Utils as OneLoginUtils;
-use Slides\Saml2\Models\Tenant;
+use NiklasSchmitt\Saml2\Models\Tenant;
 
 class OneLoginBuilder
 {

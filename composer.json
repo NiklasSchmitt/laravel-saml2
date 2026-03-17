@@ -1,5 +1,5 @@
 {
-    "name": "24slides/laravel-saml2",
+    "name": "niklasschmitt/laravel-saml2",
     "description": "SAML2 Service Provider integration for Laravel applications, based on OneLogin toolkit",
     "type": "library",
     "keywords": ["laravel", "saml", "saml2", "onelogin", "sso"],
@@ -28,7 +28,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Slides\\Saml2\\": "src/"
+            "NiklasSchmitt\\Saml2\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -37,15 +37,17 @@
     "extra": {
         "laravel": {
             "aliases": {
-                "Saml2": "Slides\\Saml2\\Facades\\Auth"
+                "Saml2": "NiklasSchmitt\\Saml2\\Facades\\Auth"
             },
             "providers": [
-                "Slides\\Saml2\\ServiceProvider"
+                "NiklasSchmitt\\Saml2\\ServiceProvider"
             ]
         }
     },
-    "replace": {
-        "24slides/laravel-saml2": "*"
+    "conflict": {
+        "onelogin/php-saml": "<4.3.1",
+        "24slides/laravel-saml2": "*",
+        "niklasschmitt/laravel-saml2": "<2.5.0"
     },
     "minimum-stability": "stable",
     "prefer-stable": true

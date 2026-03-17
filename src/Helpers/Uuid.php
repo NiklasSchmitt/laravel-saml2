@@ -1,6 +1,6 @@
 <?php
 
-namespace Slides\Saml2\Helpers;
+namespace NiklasSchmitt\Saml2\Helpers;
 
 /**
  * Lightweight RFC 9562 UUIDv7 generator.

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Slides\Saml2\Http\Middleware;
+namespace NiklasSchmitt\Saml2\Http\Middleware;
 
 use Illuminate\Support\Facades\Log;
-use Slides\Saml2\Models\Tenant;
-use Slides\Saml2\OneLoginBuilder;
-use Slides\Saml2\Repositories\TenantRepository;
+use NiklasSchmitt\Saml2\Models\Tenant;
+use NiklasSchmitt\Saml2\OneLoginBuilder;
+use NiklasSchmitt\Saml2\Repositories\TenantRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ResolveTenant

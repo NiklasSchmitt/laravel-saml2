@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Slides\Saml2;
+namespace NiklasSchmitt\Saml2;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -41,18 +41,18 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         }
 
         $this->commands([
-            \Slides\Saml2\Commands\CreateTenant::class,
-            \Slides\Saml2\Commands\UpdateTenant::class,
-            \Slides\Saml2\Commands\DeleteTenant::class,
-            \Slides\Saml2\Commands\RestoreTenant::class,
-            \Slides\Saml2\Commands\ListTenants::class,
-            \Slides\Saml2\Commands\TenantCredentials::class
+            \NiklasSchmitt\Saml2\Commands\CreateTenant::class,
+            \NiklasSchmitt\Saml2\Commands\UpdateTenant::class,
+            \NiklasSchmitt\Saml2\Commands\DeleteTenant::class,
+            \NiklasSchmitt\Saml2\Commands\RestoreTenant::class,
+            \NiklasSchmitt\Saml2\Commands\ListTenants::class,
+            \NiklasSchmitt\Saml2\Commands\TenantCredentials::class
         ]);
     }
 
     protected function bootMiddleware(): void
     {
-        $this->app['router']->aliasMiddleware('saml2.resolveTenant', \Slides\Saml2\Http\Middleware\ResolveTenant::class);
+        $this->app['router']->aliasMiddleware('saml2.resolveTenant', \NiklasSchmitt\Saml2\Http\Middleware\ResolveTenant::class);
     }
 
     protected function loadMigrations(): void
