@@ -6,8 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddIndexToSaml2TenantsTable extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -33,4 +32,4 @@ class AddIndexToSaml2TenantsTable extends Migration
             $table->dropIndex('saml2_tenants_key_index');
         });
     }
-}
+};
