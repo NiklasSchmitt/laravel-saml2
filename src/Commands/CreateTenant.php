@@ -1,16 +1,16 @@
 <?php
 
-namespace Slides\Saml2\Commands;
+namespace NiklasSchmitt\Saml2\Commands;
 
-use Slides\Saml2\Helpers\ConsoleHelper;
-use Slides\Saml2\Helpers\Uuid;
-use Slides\Saml2\Models\Tenant;
-use Slides\Saml2\Repositories\TenantRepository;
+use NiklasSchmitt\Saml2\Helpers\ConsoleHelper;
+use NiklasSchmitt\Saml2\Helpers\Uuid;
+use NiklasSchmitt\Saml2\Models\Tenant;
+use NiklasSchmitt\Saml2\Repositories\TenantRepository;
 
 /**
  * Class CreateTenant
  *
- * @package Slides\Saml2\Commands
+ * @package NiklasSchmitt\Saml2\Commands
  */
 class CreateTenant extends \Illuminate\Console\Command
 {

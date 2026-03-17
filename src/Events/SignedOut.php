@@ -1,11 +1,11 @@
 <?php
 
-namespace Slides\Saml2\Events;
+namespace NiklasSchmitt\Saml2\Events;
 
 /**
  * Class LoggedOut
  *
- * @package Slides\Saml2\Events
+ * @package NiklasSchmitt\Saml2\Events
  */
 class SignedOut
 {

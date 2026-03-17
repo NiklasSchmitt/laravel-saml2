@@ -1,36 +1,34 @@
 {
-    "name": "24slides/laravel-saml2",
+    "name": "niklasschmitt/laravel-saml2",
     "description": "SAML2 Service Provider integration for Laravel applications, based on OneLogin toolkit",
     "type": "library",
     "keywords": ["laravel", "saml", "saml2", "onelogin", "sso"],
-    "homepage": "https://github.com/24slides/laravel-saml2",
+    "homepage": "https://github.com/NiklasSchmitt/laravel-saml2",
     "license": "MIT",
     "authors": [
         {
-            "name": "Artem Brezhnev",
-            "email": "brezzhnev@gmail.com"
-        },
-        {
             "name": "Niklas Schmitt",
             "email": "niklas.schmitt@hs-fulda.de"
+        },
+        {
+            "name": "Artem Brezhnev",
+            "email": "brezzhnev@gmail.com"
         }
     ],
     "require": {
-        "php": ">=8.2",
+        "php": "^8.4",
         "ext-openssl": "*",
-        "illuminate/console": "^9.0 || ^10.0 || ^11.0 || ^12.0",
-        "illuminate/database": "^9.0 || ^10.0 || ^11.0 || ^12.0",
-        "illuminate/support": "^9.0 || ^10.0 || ^11.0 || ^12.0",
-        "onelogin/php-saml": "^4.0"
+        "illuminate/console": "^11.0 || ^12.0",
+        "illuminate/database": "^11.0 || ^12.0",
+        "illuminate/support": "^11.0 || ^12.0",
+        "onelogin/php-saml": "^4.3.1"
     },
     "require-dev": {
-        "mockery/mockery": "^1.6.12",
-        "phpunit/phpunit": "^12.4.2",
         "squizlabs/php_codesniffer": "^4.0.0"
     },
     "autoload": {
         "psr-4": {
-            "Slides\\Saml2\\": "src/"
+            "NiklasSchmitt\\Saml2\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -39,19 +37,18 @@
     "extra": {
         "laravel": {
             "aliases": {
-                "Saml2": "Slides\\Saml2\\Facades\\Auth"
+                "Saml2": "NiklasSchmitt\\Saml2\\Facades\\Auth"
             },
             "providers": [
-                "Slides\\Saml2\\ServiceProvider"
+                "NiklasSchmitt\\Saml2\\ServiceProvider"
             ]
-        },
-        "branch-aliases": {
-            "dev-master": "2.0.8-dev"
         }
     },
-    "replace": {
-        "24slides/laravel-saml2": "*"
+    "conflict": {
+        "onelogin/php-saml": "<4.3.1",
+        "24slides/laravel-saml2": "*",
+        "niklasschmitt/laravel-saml2": "<2.5.0"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }

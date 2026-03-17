@@ -1,6 +1,6 @@
 <?php
 
-namespace Slides\Saml2\Helpers;
+namespace NiklasSchmitt\Saml2\Helpers;
 
 use Illuminate\Support\Arr;
 

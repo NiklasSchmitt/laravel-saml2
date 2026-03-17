@@ -1,28 +1,28 @@
 <?php
 
-namespace Slides\Saml2\Commands;
+namespace NiklasSchmitt\Saml2\Commands;
 
-use Slides\Saml2\Models\Tenant;
+use NiklasSchmitt\Saml2\Models\Tenant;
 use Illuminate\Support\Str;
 
 /**
  * Class CreateTenant
  *
- * @package Slides\Saml2\Commands
+ * @package NiklasSchmitt\Saml2\Commands
  */
 trait RendersTenants
 {
     /**
      * Render tenants in a table.
      *
-     * @param \Slides\Saml2\Models\Tenant|\Illuminate\Support\Collection $tenants
+     * @param \NiklasSchmitt\Saml2\Models\Tenant|\Illuminate\Support\Collection $tenants
      * @param string|null $title
      *
      * @return void
      */
     protected function renderTenants($tenants, ?string $title = null)
     {
-        /** @var \Slides\Saml2\Models\Tenant[]|\Illuminate\Database\Eloquent\Collection $tenants */
+        /** @var \NiklasSchmitt\Saml2\Models\Tenant[]|\Illuminate\Database\Eloquent\Collection $tenants */
         $tenants = $tenants instanceof Tenant
             ? collect([$tenants])
             : $tenants;
@@ -50,7 +50,7 @@ trait RendersTenants
     /**
      * Get a columns of the Tenant.
      *
-     * @param \Slides\Saml2\Models\Tenant $tenant
+     * @param \NiklasSchmitt\Saml2\Models\Tenant $tenant
      *
      * @return array
      */
@@ -76,7 +76,7 @@ trait RendersTenants
     /**
      * Render a tenant credentials.
      *
-     * @param \Slides\Saml2\Models\Tenant $tenant
+     * @param \NiklasSchmitt\Saml2\Models\Tenant $tenant
      *
      * @return void
      */

@@ -1,13 +1,13 @@
 <?php
 
-namespace Slides\Saml2\Commands;
+namespace NiklasSchmitt\Saml2\Commands;
 
-use Slides\Saml2\Repositories\TenantRepository;
+use NiklasSchmitt\Saml2\Repositories\TenantRepository;
 
 /**
  * Class ListTenants
  *
- * @package Slides\Saml2\Commands
+ * @package NiklasSchmitt\Saml2\Commands
  */
 class ListTenants extends \Illuminate\Console\Command
 {

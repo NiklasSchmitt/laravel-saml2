@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'tenantModel' => \Slides\Saml2\Models\Tenant::class,
+    'tenantModel' => \NiklasSchmitt\Saml2\Models\Tenant::class,
 
     /*
     |--------------------------------------------------------------------------
