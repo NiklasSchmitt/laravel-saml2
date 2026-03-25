@@ -1,29 +1,42 @@
 <?php
 
-declare(strict_types=1);
-
 namespace NiklasSchmitt\Saml2\Http\Middleware;
 
 use Illuminate\Support\Facades\Log;
-use NiklasSchmitt\Saml2\Models\Tenant;
 use NiklasSchmitt\Saml2\OneLoginBuilder;
 use NiklasSchmitt\Saml2\Repositories\TenantRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * Class ResolveTenant
+ */
 class ResolveTenant
 {
-    public function __construct(
-        protected TenantRepository $tenants,
-        protected OneLoginBuilder $builder
-    )
+    /** @var TenantRepository */
+    protected $tenants;
+
+    /** @var OneLoginBuilder */
+    protected $builder;
+
+    /**
+     * ResolveTenant constructor.
+     */
+    public function __construct(TenantRepository $tenants, OneLoginBuilder $builder)
     {
+        $this->tenants = $tenants;
+        $this->builder = $builder;
     }
 
-    public function handle($request, \Closure $next): mixed
+    /**
+     * Handle an incoming request.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @throws NotFoundHttpException
+     */
+    public function handle($request, \Closure $next)
     {
-        $tenant = $this->resolveTenant($request);
-
-        if (! $tenant) {
+        if (!$tenant = $this->resolveTenant($request)) {
             throw new NotFoundHttpException();
         }
 
@@ -36,12 +49,19 @@ class ResolveTenant
         }
 
         session()->flash('saml2.tenant.uuid', $tenant->uuid);
-        $this->builder->bootstrap($tenant);
+        $this->builder->withTenant($tenant)->bootstrap();
 
         return $next($request);
     }
 
-    protected function resolveTenant($request): ?Tenant
+    /**
+     * Resolve a tenant by a request.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \NiklasSchmitt\Saml2\Models\Tenant|null
+     */
+    protected function resolveTenant($request)
     {
         $uuid = $request->route('uuid');
 
@@ -55,7 +75,7 @@ class ResolveTenant
             return null;
         }
 
-        $tenant = $this->tenants->findByUUID((string) $uuid);
+        $tenant = $this->tenants->findByUUID($uuid);
 
         if (! $tenant) {
             if (config('saml2.debug')) {
@@ -72,7 +92,7 @@ class ResolveTenant
                 Log::debug('[Saml2] Tenant #' . $tenant->id . ' resolved but marked as deleted', [
                     'id' => $tenant->id,
                     'uuid' => $uuid,
-                    'deleted_at' => $tenant->deleted_at?->toDateTimeString(),
+                    'deleted_at' => $tenant->deleted_at->toDateTimeString(),
                 ]);
             }
 

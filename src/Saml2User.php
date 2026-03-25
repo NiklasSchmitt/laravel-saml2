@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace NiklasSchmitt\Saml2;
 
 use OneLogin\Saml2\Auth as OneLoginAuth;
@@ -9,21 +7,52 @@ use NiklasSchmitt\Saml2\Models\Tenant;
 
 class Saml2User
 {
-    protected array $parsedAttributes = [];
+    /**
+     * OneLogin authentication handler.
+     *
+     * @var OneLoginAuth
+     */
+    protected $auth;
 
-    public function __construct(
-        protected OneLoginAuth $auth,
-        protected Tenant $tenant
-    )
+    /**
+     * The tenant user belongs to.
+     *
+     * @var Tenant
+     */
+    protected $tenant;
+
+    /**
+     * Parsed SAML attributes mapped by property name.
+     *
+     * @var array<string, array|null>
+     */
+    protected $parsedAttributes = [];
+
+    /**
+     * Saml2User constructor.
+     */
+    public function __construct(OneLoginAuth $auth, Tenant $tenant)
     {
+        $this->auth = $auth;
+        $this->tenant = $tenant;
     }
 
-    public function getUserId(): ?string
+    /**
+     * Get the user ID retrieved from assertion processed this request.
+     *
+     * @return string
+     */
+    public function getUserId()
     {
         return $this->auth->getNameId();
     }
 
-    public function getAttributes(): array
+    /**
+     * Get the attributes retrieved from assertion processed this request
+     *
+     * @return array
+     */
+    public function getAttributes()
     {
         return $this->auth->getAttributes();
     }
@@ -31,47 +60,49 @@ class Saml2User
     /**
      * Returns the requested SAML attribute
      *
-     * @param string $name The requested attribute of the user.
+     * @param string $name the requested attribute of the user
      *
-     * @return array|null Requested SAML attribute ($name).
+     * @return array|null requested SAML attribute ($name)
      */
-    public function getAttribute(string $name): ?array
+    public function getAttribute($name)
     {
         return $this->auth->getAttribute($name);
     }
 
-    public function getAttributesWithFriendlyName(): array
+    /**
+     * The attributes retrieved from assertion processed this request.
+     *
+     * @return array
+     */
+    public function getAttributesWithFriendlyName()
     {
         return $this->auth->getAttributesWithFriendlyName();
     }
 
-    public function getRawSamlAssertion(): ?string
+    /**
+     * The SAML assertion processed this request.
+     *
+     * @return string
+     */
+    public function getRawSamlAssertion()
     {
-        return app('request')->input('SAMLResponse');
+        return app('request')->input('SAMLResponse'); // just this request
     }
 
-    public function getIntendedUrl(): ?string
+    /**
+     * Get the intended URL.
+     */
+    public function getIntendedUrl()
     {
         $relayState = app('request')->input('RelayState');
 
         $url = app('Illuminate\Contracts\Routing\UrlGenerator');
 
-        if (! is_string($relayState) || $relayState === '') {
-            return null;
+        if ($relayState && $url->full() != $relayState) {
+            return $relayState;
         }
 
-        if ($url->full() === $relayState) {
-            return null;
-        }
-
-        $relayHost = parse_url($relayState, PHP_URL_HOST);
-        $currentHost = parse_url($url->full(), PHP_URL_HOST);
-
-        if ($relayHost !== null && $currentHost !== null && $relayHost !== $currentHost) {
-            return null;
-        }
-
-        return $relayState;
+        return null;
     }
 
     /**
@@ -82,7 +113,7 @@ class Saml2User
      *
      * @return array|null
      */
-    public function parseUserAttribute(?string $samlAttribute = null, ?string $propertyName = null): ?array
+    public function parseUserAttribute($samlAttribute = null, $propertyName = null)
     {
         if (empty($samlAttribute)) {
             return null;
@@ -92,7 +123,10 @@ class Saml2User
             return $this->getAttribute($samlAttribute);
         }
 
-        return $this->parsedAttributes[$propertyName] = $this->getAttribute($samlAttribute);
+        $value = $this->getAttribute($samlAttribute);
+        $this->parsedAttributes[$propertyName] = $value;
+
+        return $value;
     }
 
     /**
@@ -102,50 +136,74 @@ class Saml2User
      *
      * @return void
      */
-    public function parseAttributes(array $attributes = []): void
+    public function parseAttributes($attributes = [])
     {
         foreach ($attributes as $propertyName => $samlAttribute) {
             $this->parseUserAttribute($samlAttribute, $propertyName);
         }
     }
 
-    public function getParsedAttributes(): array
-    {
-        return $this->parsedAttributes;
-    }
-
-    public function getParsedAttribute(string $propertyName): ?array
-    {
-        return $this->parsedAttributes[$propertyName] ?? null;
-    }
-
-    public function __get(string $name): mixed
-    {
-        return $this->parsedAttributes[$name] ?? null;
-    }
-
-    public function __isset(string $name): bool
-    {
-        return array_key_exists($name, $this->parsedAttributes);
-    }
-
-    public function getSessionIndex(): ?string
+    /**
+     * Get user's session index.
+     *
+     * @return string|null
+     */
+    public function getSessionIndex()
     {
         return $this->auth->getSessionIndex();
     }
 
-    public function getNameId(): ?string
+    /**
+     * Get user's name ID.
+     *
+     * @return string
+     */
+    public function getNameId()
     {
         return $this->auth->getNameId();
     }
 
-    public function setTenant(Tenant $tenant): void
+    /**
+     * Set a tenant
+     *
+     * @return void
+     */
+    public function setTenant(Tenant $tenant)
     {
         $this->tenant = $tenant;
     }
 
-    public function getTenant(): Tenant
+    /**
+     * Get a resolved tenant.
+     *
+     * @return Tenant|null
+     */
+    public function getTenant()
     {
         return $this->tenant;
+    }
+
+    /**
+     * Read parsed attribute values as virtual properties (for backward compatibility).
+     *
+     * @param string $name
+     *
+     * @return array|null
+     */
+    public function __get($name)
+    {
+        return $this->parsedAttributes[$name] ?? null;
+    }
+
+    /**
+     * Determine whether a parsed attribute exists for a virtual property.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return array_key_exists($name, $this->parsedAttributes);
     }
 }

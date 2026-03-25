@@ -5,11 +5,6 @@ namespace NiklasSchmitt\Saml2\Events;
 use NiklasSchmitt\Saml2\Saml2User;
 use NiklasSchmitt\Saml2\Auth;
 
-/**
- * Class LoggedIn
- *
- * @package NiklasSchmitt\Saml2\Events
- */
 class SignedIn
 {
     /**
@@ -28,9 +23,6 @@ class SignedIn
 
     /**
      * LoggedIn constructor.
-     *
-     * @param Saml2User $user
-     * @param Auth $auth
      */
     public function __construct(Saml2User $user, Auth $auth)
     {

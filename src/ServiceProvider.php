@@ -1,17 +1,32 @@
 <?php
 
-declare(strict_types=1);
-
 namespace NiklasSchmitt\Saml2;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
-    public function register(): void
+    /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = false;
+
+    /**
+     * Register package services.
+     *
+     * @return void
+     */
+    public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/saml2.php', 'saml2');
     }
 
-    public function boot(): void
+    /**
+     * Bootstrap the application events.
+     *
+     * @return void
+     */
+    public function boot()
     {
         $this->bootMiddleware();
         $this->bootRoutes();
@@ -20,45 +35,76 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->loadMigrations();
     }
 
-    protected function bootRoutes(): void
+    /**
+     * Bootstrap the routes.
+     *
+     * @return void
+     */
+    protected function bootRoutes()
     {
-        if ((bool) $this->app['config']->get('saml2.useRoutes', true)) {
-            $this->loadRoutesFrom(__DIR__ . '/Http/routes.php');
+        if (config('saml2.useRoutes', true) == true) {
+            include __DIR__ . '/Http/routes.php';
         }
     }
 
-    protected function bootPublishes(): void
+    /**
+     * Bootstrap the publishable files.
+     *
+     * @return void
+     */
+    protected function bootPublishes()
     {
         $source = __DIR__ . '/../config/saml2.php';
 
         $this->publishes([$source => config_path('saml2.php')]);
     }
 
-    protected function bootCommands(): void
+    /**
+     * Bootstrap the console commands.
+     *
+     * @return void
+     */
+    protected function bootCommands()
     {
-        if (! $this->app->runningInConsole()) {
-            return;
-        }
-
         $this->commands([
-            \NiklasSchmitt\Saml2\Commands\CreateTenant::class,
-            \NiklasSchmitt\Saml2\Commands\UpdateTenant::class,
-            \NiklasSchmitt\Saml2\Commands\DeleteTenant::class,
-            \NiklasSchmitt\Saml2\Commands\RestoreTenant::class,
-            \NiklasSchmitt\Saml2\Commands\ListTenants::class,
-            \NiklasSchmitt\Saml2\Commands\TenantCredentials::class
+            Commands\CreateTenant::class,
+            Commands\UpdateTenant::class,
+            Commands\DeleteTenant::class,
+            Commands\RestoreTenant::class,
+            Commands\ListTenants::class,
+            Commands\TenantCredentials::class,
         ]);
     }
 
-    protected function bootMiddleware(): void
+    /**
+     * Bootstrap the console commands.
+     *
+     * @return void
+     */
+    protected function bootMiddleware()
     {
-        $this->app['router']->aliasMiddleware('saml2.resolveTenant', \NiklasSchmitt\Saml2\Http\Middleware\ResolveTenant::class);
+        $this->app['router']->aliasMiddleware('saml2.resolveTenant', Http\Middleware\ResolveTenant::class);
     }
 
-    protected function loadMigrations(): void
+    /**
+     * Load the package migrations.
+     *
+     * @return void
+     */
+    protected function loadMigrations()
     {
         if (config('saml2.load_migrations', true)) {
             $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         }
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [];
     }
 }

@@ -1,11 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace NiklasSchmitt\Saml2\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use OneLogin\Saml2\Error as OneLoginError;
 use NiklasSchmitt\Saml2\Auth;
@@ -13,15 +10,11 @@ use NiklasSchmitt\Saml2\Events\SignedIn;
 
 /**
  * Class Saml2Controller
- *
- * @package NiklasSchmitt\Saml2\Http\Controllers
  */
 class Saml2Controller extends Controller
 {
     /**
      * Render the metadata.
-     *
-     * @param Auth $auth
      *
      * @return \Illuminate\Support\Facades\Response
      *
@@ -39,14 +32,12 @@ class Saml2Controller extends Controller
      *
      * Fires "SignedIn" event if a valid user is found.
      *
-     * @param Auth $auth
-     *
      * @return \Illuminate\Support\Facades\Redirect
      *
      * @throws OneLoginError
      * @throws \OneLogin\Saml2\ValidationError
      */
-    public function acs(Auth $auth): RedirectResponse
+    public function acs(Auth $auth)
     {
         $errors = $auth->acs();
 
@@ -88,14 +79,12 @@ class Saml2Controller extends Controller
      *
      * This means the user logged out of the SSO infrastructure, you 'should' log him out locally too.
      *
-     * @param Auth $auth
-     *
      * @return \Illuminate\Support\Facades\Redirect
      *
      * @throws OneLoginError
      * @throws \Exception
      */
-    public function sls(Auth $auth): RedirectResponse
+    public function sls(Auth $auth)
     {
         $errors = $auth->sls(config('saml2.retrieveParametersFromServer'));
 
@@ -126,7 +115,7 @@ class Saml2Controller extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function redirectToConfiguredUrl(?string $url = null, ?string $fallback = null): RedirectResponse
+    protected function redirectToConfiguredUrl($url = null, $fallback = null)
     {
         return redirect()->to($url ?: $fallback ?: '/');
     }
@@ -135,7 +124,6 @@ class Saml2Controller extends Controller
      * Initiate a login request.
      *
      * @param Illuminate\Http\Request $request
-     * @param Auth $auth
      *
      * @return void
      *
@@ -152,7 +140,6 @@ class Saml2Controller extends Controller
      * Initiate a logout request.
      *
      * @param Illuminate\Http\Request $request
-     * @param Auth $auth
      *
      * @return void
      *
