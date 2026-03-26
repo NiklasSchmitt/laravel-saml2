@@ -1,11 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace NiklasSchmitt\Saml2\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use OneLogin\Saml2\Error as OneLoginError;
 use NiklasSchmitt\Saml2\Auth;
@@ -46,7 +43,7 @@ class Saml2Controller extends Controller
      * @throws OneLoginError
      * @throws \OneLogin\Saml2\ValidationError
      */
-    public function acs(Auth $auth): RedirectResponse
+    public function acs(Auth $auth)
     {
         $errors = $auth->acs();
 
@@ -60,10 +57,7 @@ class Saml2Controller extends Controller
             logger()->error('saml2.error', $errors);
             session()->flash('saml2.error', $errors);
 
-            return $this->redirectToConfiguredUrl(
-                config('saml2.errorRoute'),
-                config('saml2.loginRoute')
-            );
+            return redirect(config('saml2.errorRoute'));
         }
 
         $user = $auth->getSaml2User();
@@ -73,12 +67,10 @@ class Saml2Controller extends Controller
         $redirectUrl = $user->getIntendedUrl();
 
         if ($redirectUrl) {
-            return $this->redirectToConfiguredUrl($redirectUrl);
+            return redirect($redirectUrl);
         }
 
-        return $this->redirectToConfiguredUrl(
-            $auth->getTenant()->relay_state_url ?: config('saml2.loginRoute')
-        );
+        return redirect($auth->getTenant()->relay_state_url ?: config('saml2.loginRoute'));
     }
 
     /**
@@ -95,7 +87,7 @@ class Saml2Controller extends Controller
      * @throws OneLoginError
      * @throws \Exception
      */
-    public function sls(Auth $auth): RedirectResponse
+    public function sls(Auth $auth)
     {
         $errors = $auth->sls(config('saml2.retrieveParametersFromServer'));
 
@@ -109,26 +101,10 @@ class Saml2Controller extends Controller
             logger()->error('saml2.error', $errors);
             session()->flash('saml2.error', $errors);
 
-            return $this->redirectToConfiguredUrl(
-                config('saml2.errorRoute'),
-                config('saml2.logoutRoute')
-            );
+            return redirect(config('saml2.errorRoute'));
         }
 
-        return $this->redirectToConfiguredUrl(config('saml2.logoutRoute')); //may be set a configurable default
-    }
-
-    /**
-     * Build a redirect response that never returns Redirector instance.
-     *
-     * @param string|null $url
-     * @param string|null $fallback
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    protected function redirectToConfiguredUrl(?string $url = null, ?string $fallback = null): RedirectResponse
-    {
-        return redirect()->to($url ?: $fallback ?: '/');
+        return redirect(config('saml2.logoutRoute')); //may be set a configurable default
     }
 
     /**
