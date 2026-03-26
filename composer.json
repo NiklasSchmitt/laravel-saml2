@@ -16,11 +16,11 @@
         }
     ],
     "require": {
-        "php": "^8.4",
+        "php": ">=8.4",
         "ext-openssl": "*",
-        "illuminate/console": "^11.0 || ^12.0",
-        "illuminate/database": "^11.0 || ^12.0",
-        "illuminate/support": "^11.0 || ^12.0",
+        "illuminate/console": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/database": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/support": "^11.0 || ^12.0 || ^13.0",
         "onelogin/php-saml": "^4.3.1"
     },
     "require-dev": {
@@ -47,6 +47,7 @@
     "conflict": {
         "onelogin/php-saml": "<4.3.1",
         "24slides/laravel-saml2": "*",
+        "scaler-tech/laravel-saml2": "*",
         "niklasschmitt/laravel-saml2": "<2.5.0"
     },
     "minimum-stability": "stable",
