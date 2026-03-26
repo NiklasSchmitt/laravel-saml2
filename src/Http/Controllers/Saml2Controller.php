@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NiklasSchmitt\Saml2\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -7,6 +9,8 @@ use Illuminate\Routing\Controller;
 use OneLogin\Saml2\Error as OneLoginError;
 use NiklasSchmitt\Saml2\Auth;
 use NiklasSchmitt\Saml2\Events\SignedIn;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 
 /**
  * Class Saml2Controller
@@ -24,7 +28,7 @@ class Saml2Controller extends Controller
      *
      * @throws OneLoginError
      */
-    public function metadata(Auth $auth)
+    public function metadata(Auth $auth): Response
     {
         $metadata = $auth->getMetadata();
 
@@ -43,7 +47,7 @@ class Saml2Controller extends Controller
      * @throws OneLoginError
      * @throws \OneLogin\Saml2\ValidationError
      */
-    public function acs(Auth $auth)
+    public function acs(Auth $auth): RedirectResponse
     {
         $errors = $auth->acs();
 
@@ -87,7 +91,7 @@ class Saml2Controller extends Controller
      * @throws OneLoginError
      * @throws \Exception
      */
-    public function sls(Auth $auth)
+    public function sls(Auth $auth): RedirectResponse
     {
         $errors = $auth->sls(config('saml2.retrieveParametersFromServer'));
 
@@ -117,7 +121,7 @@ class Saml2Controller extends Controller
      *
      * @throws OneLoginError
      */
-    public function login(Request $request, Auth $auth)
+    public function login(Request $request, Auth $auth): void
     {
         $redirectUrl = $auth->getTenant()->relay_state_url ?: config('saml2.loginRoute');
 
@@ -134,7 +138,7 @@ class Saml2Controller extends Controller
      *
      * @throws OneLoginError
      */
-    public function logout(Request $request, Auth $auth)
+    public function logout(Request $request, Auth $auth): void
     {
         $auth->logout(
             $request->query('returnTo'),
