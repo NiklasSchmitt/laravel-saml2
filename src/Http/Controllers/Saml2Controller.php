@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace NiklasSchmitt\Saml2\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -28,7 +26,7 @@ class Saml2Controller extends Controller
      *
      * @throws OneLoginError
      */
-    public function metadata(Auth $auth): Response
+    public function metadata(Auth $auth)
     {
         $metadata = $auth->getMetadata();
 
@@ -47,7 +45,7 @@ class Saml2Controller extends Controller
      * @throws OneLoginError
      * @throws \OneLogin\Saml2\ValidationError
      */
-    public function acs(Auth $auth): RedirectResponse
+    public function acs(Auth $auth)
     {
         $errors = $auth->acs();
 
@@ -61,7 +59,7 @@ class Saml2Controller extends Controller
             logger()->error('saml2.error', $errors);
             session()->flash('saml2.error', $errors);
 
-            return redirect(config('saml2.errorRoute'));
+            return redirect()->to(config('saml2.errorRoute'));
         }
 
         $user = $auth->getSaml2User();
@@ -71,10 +69,10 @@ class Saml2Controller extends Controller
         $redirectUrl = $user->getIntendedUrl();
 
         if ($redirectUrl) {
-            return redirect($redirectUrl);
+            return redirect()->intended($redirectUrl);
         }
 
-        return redirect($auth->getTenant()->relay_state_url ?: config('saml2.loginRoute'));
+        return redirect()->intended($auth->getTenant()->relay_state_url ?: config('saml2.loginRoute'));
     }
 
     /**
@@ -91,7 +89,7 @@ class Saml2Controller extends Controller
      * @throws OneLoginError
      * @throws \Exception
      */
-    public function sls(Auth $auth): RedirectResponse
+    public function sls(Auth $auth)
     {
         $errors = $auth->sls(config('saml2.retrieveParametersFromServer'));
 
@@ -105,10 +103,10 @@ class Saml2Controller extends Controller
             logger()->error('saml2.error', $errors);
             session()->flash('saml2.error', $errors);
 
-            return redirect(config('saml2.errorRoute'));
+            return redirect()->to(config('saml2.errorRoute'));
         }
 
-        return redirect(config('saml2.logoutRoute')); //may be set a configurable default
+        return redirect()->intended(config('saml2.logoutRoute')); // may be set a configurable default
     }
 
     /**
@@ -121,7 +119,7 @@ class Saml2Controller extends Controller
      *
      * @throws OneLoginError
      */
-    public function login(Request $request, Auth $auth): void
+    public function login(Request $request, Auth $auth)
     {
         $redirectUrl = $auth->getTenant()->relay_state_url ?: config('saml2.loginRoute');
 
@@ -138,7 +136,7 @@ class Saml2Controller extends Controller
      *
      * @throws OneLoginError
      */
-    public function logout(Request $request, Auth $auth): void
+    public function logout(Request $request, Auth $auth)
     {
         $auth->logout(
             $request->query('returnTo'),
