@@ -207,7 +207,7 @@ return [
         */
 
         'assertionConsumerService' => [
-            'url' => '',
+            'url' => env('SAML2_SP_ACS_URL', ''),
         ],
 
         /*
@@ -224,7 +224,7 @@ return [
         */
 
         'singleLogoutService' => [
-            'url' => ''
+            'url' => env('SAML2_SP_SLS_URL', ''),
         ],
     ],
 
