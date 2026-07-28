@@ -47,8 +47,7 @@
     "conflict": {
         "onelogin/php-saml": "<4.3.1",
         "24slides/laravel-saml2": "*",
-        "scaler-tech/laravel-saml2": "*",
-        "niklasschmitt/laravel-saml2": "<2.5.0"
+        "scaler-tech/laravel-saml2": "*"
     },
     "minimum-stability": "stable",
     "prefer-stable": true
