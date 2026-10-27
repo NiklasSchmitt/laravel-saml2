@@ -11,6 +11,8 @@ use NiklasSchmitt\Saml2\Models\Tenant;
 
 class Auth
 {
+    protected ?string $slsRedirectUrl = null;
+
     public function __construct(
         protected OneLoginAuth $base,
         protected Tenant $tenant
@@ -117,7 +119,8 @@ class Auth
     /**
      * Process the SAML Logout Response / Logout Request sent by the IdP.
      *
-     * Returns an array with errors if it can not logout.
+     * Returns an array with errors if it can not logout. The answer to a logout request of the IdP is not sent by
+     * php-saml (it would redirect and exit()): its URL is available with getSlsRedirectUrl().
      *
      * @param bool $retrieveParametersFromServer
      *
@@ -127,13 +130,21 @@ class Auth
      */
     public function sls(bool $retrieveParametersFromServer = false): array
     {
-        $this->base->processSLO(false, null, $retrieveParametersFromServer, function () {
+        $this->slsRedirectUrl = $this->base->processSLO(false, null, $retrieveParametersFromServer, function () {
             event(new SignedOut());
-        });
+        }, true);
 
         $errors = $this->base->getErrors();
 
         return $errors;
+    }
+
+    /**
+     * The URL (the logout response for the IdP) the user has to be redirected to after sls(), if there is one.
+     */
+    public function getSlsRedirectUrl(): ?string
+    {
+        return $this->slsRedirectUrl;
     }
 
     /**
@@ -148,7 +159,11 @@ class Auth
     public function getMetadata(): string
     {
         $settings = $this->base->getSettings();
-        $metadata = $settings->getSPMetadata();
+        $metadata = $settings->getSPMetadata(
+            false,
+            config('saml2.metadata.validUntil'),
+            config('saml2.metadata.cacheDuration')
+        );
         $errors = $settings->validateMetadata($metadata);
 
         if (!count($errors)) {

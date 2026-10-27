@@ -358,6 +358,50 @@ return [
         */
 
         'requestedAuthnContext' => true,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Requirement to encrypt the assertions.
+        |--------------------------------------------------------------------------
+        |
+        | Indicates a requirement for the <saml:Assertion> elements received by
+        | this SP to be encrypted (with the public key of the SP). An assertion
+        | that is not encrypted is rejected. The private key (sp.privateKey) is
+        | needed to decrypt.
+        |
+        */
+
+        'wantAssertionsEncrypted' => false,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Repeated attribute names.
+        |--------------------------------------------------------------------------
+        |
+        | Set to true to accept an attribute name that is repeated within the
+        | <saml:AttributeStatement> (the values are merged).
+        |
+        */
+
+        'allowRepeatAttributeName' => false,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Metadata of the SP.
+    |--------------------------------------------------------------------------
+    |
+    | validUntil: unix timestamp until the metadata are valid, null for the
+    | default of php-saml (a few days). An identity provider that does not
+    | refresh the metadata regularly needs a later date.
+    |
+    | cacheDuration: seconds the metadata may be cached, null for the default.
+    |
+    */
+
+    'metadata' => [
+        'validUntil' => null,
+        'cacheDuration' => null,
     ],
 
     /*

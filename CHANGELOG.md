@@ -5,6 +5,76 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+This is a fork of [24Slides/laravel-saml2](https://github.com/24Slides/laravel-saml2). Everything up to and including 2.4.1 is the
+history of the upstream package; the fork starts with 2.5.1.
+
+## [Unreleased]
+
+## [2.6.0] - 2026-10-27
+
+### Changed
+- `login`, `logout` and `sls` redirect with a Laravel response instead of letting php-saml redirect and `exit()`: the middleware runs
+  and the session is saved (e.g. a listener of `SignedOut` that logs the user out is kept). The answer to a logout request of the IdP
+  is available with `Auth::getSlsRedirectUrl()`.
+- `acs` and `sls` handle exceptions of php-saml (no `SAMLResponse`, an assertion that can not be decrypted, ...) like invalid messages: the
+  error is logged and the user is redirected to the error route instead of getting an error page.
+
+### Added
+- `security.wantAssertionsEncrypted` and `security.allowRepeatAttributeName` are listed in the config (php-saml options that were already passed through).
+- `metadata.validUntil` and `metadata.cacheDuration` configure the validity of the SP metadata.
+
+## [2.5.2] - 2026-07-28
+
+### Added
+- `sp.assertionConsumerService.url` and `sp.singleLogoutService.url` are configurable with `SAML2_SP_ACS_URL` and `SAML2_SP_SLS_URL`
+  (e.g. behind a reverse proxy).
+
+### Changed
+- `acs` redirects to the intended URL with `redirect()->intended()`, `sls` to the intended URL or the `logoutRoute`.
+- `Saml2Controller` has no return types and no `declare(strict_types=1)` anymore.
+- `composer.json`: the package `replaces` `24slides/laravel-saml2` instead of conflicting with it.
+
+## [2.5.1] - 2026-03-26
+
+First release of the fork. It is no longer a drop-in replacement of 24slides/laravel-saml2.
+
+### Added
+- Support for Laravel 13.
+- `saml2.serverPort` (default `APP_PORT`): the port php-saml uses for the URL of the application, e.g. behind a docker container
+  with another port (PR [#68](https://github.com/24Slides/laravel-saml2/pull/68) of upstream).
+- `Helpers\Uuid` generates UUIDv7 for new tenants (taken from scaler-tech/laravel-saml2). `ramsey/uuid` is not needed anymore.
+
+### Changed
+- **Breaking:** the package is `niklasschmitt/laravel-saml2`, the namespace is `NiklasSchmitt\Saml2` (was `Slides\Saml2`), the facade
+  alias is `NiklasSchmitt\Saml2\Facades\Auth`. Update `config/saml2.php` (`tenantModel`) and every reference to the old namespace.
+- **Breaking:** requires PHP `>=8.4`, Laravel 11, 12 or 13 (Laravel 9 and 10 are dropped) and `onelogin/php-saml` `^4.3.1` (the package
+  conflicts with older versions, with `24slides/laravel-saml2` and with `scaler-tech/laravel-saml2`).
+- **Breaking:** the migrations are consolidated: `create_saml2_tenants_table` includes `relay_state_url` and `name_id_format`, the
+  migrations of 2020 are removed and an additional migration adds a unique index for `uuid` and an index for `key`. The files are
+  renamed to `2026_03_17_create_saml2_tenants_table.php` and `2026_03_18_add_index_to_saml2_tenants_table.php` and are anonymous
+  classes. An existing installation has already created the table: do not run the create migration again (mark it as run), run the
+  index migration.
+- The `sls` route accepts `POST` besides `GET`, so a logout request of the IdP that uses the POST binding is handled
+  (taken from scaler-tech/laravel-saml2).
+- Refactored the code base: `declare(strict_types=1)`, typed signatures, constructor promotion, `OneLoginBuilder::bootstrap(Tenant $tenant)`
+  replaces `withTenant()->bootstrap()`. `Auth` and `OneLogin_Saml2_Auth` are bound per request instead of being singletons.
+- The README is reduced to a pointer to the documentation of 24Slides, the license names the new copyright holder.
+- `minimum-stability` is `stable`.
+
+### Fixed
+- `saml2:update-tenant` does not overwrite the Name ID format with the default anymore if `--nameIdFormat` is not given.
+
+### Removed
+- The test suite (`tests/`, `phpunit.xml`), the PHPUnit dev dependencies, `.travis.yml` and `.scrutinizer.yml`.
+- `composer.json`: the branch alias `dev-master`.
+
+
+## [24Slides/laravel-saml2](https://github.com/24Slides/laravel-saml2)
+here starts the changelog of the origin package
+
+---
+
+
 ## [2.4.1] - 2025-02-04
 
 ### Added
@@ -166,7 +236,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Replaced underscores with dots in routes
 - Minor refactoring, formatting
 
-[Unreleased]: https://github.com/24Slides/laravel-saml2/compare/2.4.0...HEAD
+[Unreleased]: https://github.com/NiklasSchmitt/laravel-saml2/compare/2.6.0...HEAD
+[2.6.0]: https://github.com/NiklasSchmitt/laravel-saml2/compare/2.5.2...2.6.0
+[2.5.2]: https://github.com/NiklasSchmitt/laravel-saml2/compare/2.5.1...2.5.2
+[2.5.1]: https://github.com/NiklasSchmitt/laravel-saml2/commit/106b308
+[2.4.1]: https://github.com/24Slides/laravel-saml2/compare/2.4.0...2.4.1
 [2.4.0]: https://github.com/24Slides/laravel-saml2/compare/2.3.0...2.4.0
 [2.3.0]: https://github.com/24Slides/laravel-saml2/compare/2.2.1...2.3.0
 [2.2.1]: https://github.com/24Slides/laravel-saml2/compare/2.2.0...2.2.1
